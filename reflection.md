@@ -18,6 +18,10 @@ classDiagram
         +preferences: list
         +set_availability(minutes)
         +update_preferences(preferences)
+        +add_pet(pet)
+        +get_all_tasks()
+        +get_tasks_for_pet(pet_name)
+        +get_pet_name_for_task(task)
     }
 
     class Pet {
@@ -25,8 +29,12 @@ classDiagram
         +species: str
         +age: int
         +care_notes: str
+        +tasks: list
         +update_details(name, age, notes)
         +list_tasks()
+        +add_task(task)
+        +remove_task(task_title)
+        +complete_task(task_title)
     }
 
     class Task {
@@ -35,10 +43,13 @@ classDiagram
         +duration: int
         +priority: int
         +due_time: str
+        +due_date: date
+        +frequency: str
         +completed: bool
         +mark_complete()
         +edit_task(title, duration, priority)
         +is_due_today()
+        +next_occurrence()
     }
 
     class Scheduler {
@@ -46,9 +57,14 @@ classDiagram
         +tasks: list
         +time_limit: int
         +rules: list
+        +last_plan: list
         +load_tasks_from_owner()
+        +sort_by_time()
         +sort_by_priority()
+        +filter_tasks(completed, pet_name)
         +filter_by_time()
+        +mark_task_complete(pet_name, task_title)
+        +detect_conflicts()
         +generate_schedule()
         +explain_plan()
     }
@@ -73,8 +89,8 @@ classDiagram
 
 **a. Constraints and priorities**
 
-- What constraints does your scheduler consider (for example: time, priority, preferences)?
-- How did you decide which constraints mattered most?
+- My scheduler considers available time, task priority, completion status, due time, due date, and whether a task belongs to a selected pet when filtering. It also checks for simple time conflicts when multiple tasks share the same due time.
+- I treated available time and task priority as the most important constraints because the app needs to choose a realistic plan first. After that, I used due time to present the selected tasks in a natural chronological order so the final schedule is easier for a pet owner to follow.
 
 **b. Tradeoffs**
 
@@ -87,13 +103,16 @@ classDiagram
 
 **a. How you used AI**
 
-- How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
-- What kinds of prompts or questions were most helpful?
+- I used AI mostly for design brainstorming, turning requirements into class structures, and checking how to translate ideas like recurrence or conflict detection into smaller methods. It was also useful for suggesting test cases and for pressure-testing whether a method signature still matched the design.
+- The Copilot features that were most effective were chat-based design brainstorming, inline suggestions for method structure, and test generation prompts for targeted behaviors like recurrence and conflict detection.
+- The most helpful prompts were focused and specific, such as asking how a scheduler should retrieve tasks from an owner's pets, how to sort tasks by time with a lambda key, or what edge cases matter for recurring tasks and conflict warnings.
 
 **b. Judgment and verification**
 
-- Describe one moment where you did not accept an AI suggestion as-is.
-- How did you evaluate or verify what the AI suggested?
+- One moment where I did not accept an AI suggestion as-is was around keeping tasks as a separate list on the scheduler without leaning on the owner-pet relationship. I changed that design so the scheduler loads tasks from the owner's pets instead, because that kept the system model more consistent and avoided duplicated sources of truth.
+- I also preferred not to over-optimize some algorithms when the more compact AI suggestion was harder to read. If a version was more Pythonic but less clear for a future student or reviewer, I kept the clearer one.
+- Using separate chat sessions for design, implementation, algorithms, and testing helped me stay organized because each phase had a different goal and different questions. That separation reduced context drift and made it easier to judge whether an AI suggestion actually fit the current stage of the project.
+- I evaluated AI suggestions by checking whether they matched my existing class responsibilities, then verifying them with a CLI demo and pytest. If a suggestion made the code more clever but harder to understand, I kept the version that was easier to maintain.
 
 ---
 
@@ -101,13 +120,13 @@ classDiagram
 
 **a. What you tested**
 
-- What behaviors did you test?
-- Why were these tests important?
+- I tested task completion, adding tasks to pets, sorting tasks by time, generating the next occurrence for a recurring daily task, and detecting exact same-time conflicts.
+- These tests were important because they covered both the basic class behaviors and the "smart" scheduling features that make PawPal+ different from a simple task list.
 
 **b. Confidence**
 
-- How confident are you that your scheduler works correctly?
-- What edge cases would you test next if you had more time?
+- I am quite confident in the scheduler because the core logic passes automated tests and I also verified it through the CLI demo and Streamlit UI. I would rate my confidence at about 4 out of 5.
+- If I had more time, I would test weekly recurrence more thoroughly, tasks with invalid or missing time formats, multiple recurring tasks completed in sequence, and more advanced overlap detection based on start time plus duration.
 
 ---
 
@@ -115,12 +134,12 @@ classDiagram
 
 **a. What went well**
 
-- What part of this project are you most satisfied with?
+- I am most satisfied with how the project stayed modular from the beginning. The UML, backend classes, CLI demo, tests, and Streamlit app all built on the same design instead of becoming separate one-off solutions.
 
 **b. What you would improve**
 
-- If you had another iteration, what would you improve or redesign?
+- In another iteration, I would improve the scheduling algorithm so it considers overlapping durations instead of only exact time matches, and I would make the UI better at editing or deleting existing pets and tasks.
 
 **c. Key takeaway**
 
-- What is one important thing you learned about designing systems or working with AI on this project?
+- One important thing I learned is that AI is most useful when I stay in the lead architect role. It can generate options quickly, but I still need to decide what belongs in the design, verify the behavior, and keep the system simple enough for a human to understand and extend.

@@ -1,0 +1,63 @@
+classDiagram
+    class Owner {
+        +name: str
+        +available_time: int
+        +preferences: list[str]
+        +pets: list[Pet]
+        +set_availability(minutes)
+        +update_preferences(preferences)
+        +add_pet(pet)
+        +get_all_tasks()
+        +get_tasks_for_pet(pet_name)
+        +get_pet_name_for_task(task)
+    }
+
+    class Pet {
+        +name: str
+        +species: str
+        +age: int
+        +care_notes: str
+        +tasks: list[Task]
+        +update_details(name, age, notes)
+        +list_tasks()
+        +add_task(task)
+        +remove_task(task_title)
+        +complete_task(task_title)
+    }
+
+    class Task {
+        +title: str
+        +category: str
+        +duration: int
+        +priority: int
+        +due_time: str
+        +due_date: date
+        +frequency: str
+        +completed: bool
+        +mark_complete()
+        +edit_task(...)
+        +is_due_today()
+        +next_occurrence()
+    }
+
+    class Scheduler {
+        +owner: Owner
+        +tasks: list[Task]
+        +time_limit: int
+        +rules: list[str]
+        +last_plan: list[Task]
+        +load_tasks_from_owner()
+        +sort_by_priority()
+        +sort_by_time()
+        +filter_tasks(completed, pet_name)
+        +filter_by_time()
+        +mark_task_complete(pet_name, task_title)
+        +detect_conflicts()
+        +generate_schedule()
+        +explain_plan()
+    }
+
+    Owner "1" --> "1..*" Pet : has
+    Pet "1" --> "0..*" Task : owns
+    Owner "1" --> "1" Scheduler : uses
+    Scheduler "1" --> "0..*" Task : organizes
