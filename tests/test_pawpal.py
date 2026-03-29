@@ -1,6 +1,3 @@
-from pawpal_system import Pet, Task
-
-
 from datetime import date, timedelta
 
 from pawpal_system import Owner, Pet, Scheduler, Task
@@ -21,6 +18,21 @@ def test_add_task_increases_pet_task_count() -> None:
     pet.add_task(Task(title="Breakfast", category="feeding", duration=10, priority=2))
 
     assert len(pet.tasks) == starting_count + 1
+
+
+def test_sort_by_time_returns_tasks_in_chronological_order() -> None:
+    owner = Owner(name="Jordan", available_time=60)
+    pet = Pet(name="Mochi", species="dog", age=3)
+    pet.add_task(Task(title="Evening walk", category="walk", duration=20, priority=2, due_time="6:00 PM"))
+    pet.add_task(Task(title="Breakfast", category="feeding", duration=10, priority=2, due_time="8:00 AM"))
+    pet.add_task(Task(title="Medication", category="medication", duration=5, priority=3, due_time="12:00 PM"))
+    owner.add_pet(pet)
+    scheduler = Scheduler(owner=owner)
+    scheduler.load_tasks_from_owner()
+
+    sorted_tasks = scheduler.sort_by_time()
+
+    assert [task.title for task in sorted_tasks] == ["Breakfast", "Medication", "Evening walk"]
 
 
 def test_mark_task_complete_creates_next_daily_occurrence() -> None:
