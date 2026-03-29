@@ -78,8 +78,8 @@ classDiagram
 
 **b. Tradeoffs**
 
-- Describe one tradeoff your scheduler makes.
-- Why is that tradeoff reasonable for this scenario?
+- One tradeoff my scheduler makes is that its conflict detection only checks for exact time matches instead of calculating full time overlaps based on task duration.
+- That tradeoff is reasonable for this version of PawPal+ because it keeps the logic lightweight and easy to understand while still catching a common scheduling problem. A more advanced overlap algorithm would be more accurate, but it would also add complexity that was not necessary for the first working version.
 
 ---
 
