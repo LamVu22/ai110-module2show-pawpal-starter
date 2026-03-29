@@ -4,14 +4,11 @@
 
 **a. Initial design**
 
-- One core action is that a user should be able to enter basic information about themselves, their pet, and any care preferences so the system has the context it needs to make decisions.
-- A second core action is that a user should be able to add, edit, and organize pet care tasks such as feedings, walks, medications, grooming, and enrichment activities.
-- A third core action is that a user should be able to view a daily schedule that prioritizes the most important tasks based on available time, task priority, and owner preferences.
-- The main objects in my initial design were `Owner`, `Pet`, `Task`, and `Scheduler`.
-- `Owner` would store attributes such as name, available time, and care preferences. Its methods could include updating preferences and setting daily availability.
-- `Pet` would store attributes such as name, species, age, and notes about care needs. Its methods could include updating pet details and listing the pet's tasks.
-- `Task` would store attributes such as title, category, duration, priority, due time, and completion status. Its methods could include marking a task complete, editing task details, and checking whether the task should be included in today's plan.
-- `Scheduler` would store the available tasks, owner constraints, and scheduling rules. Its methods could include sorting tasks by priority, filtering tasks that fit the time limit, and generating the final daily schedule.
+- My initial design focused on four main classes: `Owner`, `Pet`, `Task`, and `Scheduler`. I chose these classes because they match the main responsibilities of the app: storing owner information, storing pet information, representing care tasks, and generating a daily plan.
+- The `Owner` class is responsible for storing the owner's name, available time, preferences, and pet list. It also handles updates to availability and preferences so the scheduler has the right constraints to work with.
+- The `Pet` class is responsible for storing information about each pet, including its name, species, age, care notes, and assigned tasks. It also provides methods for updating pet details and viewing that pet's tasks.
+- The `Task` class is responsible for representing individual care activities such as walks, feedings, or medications. It stores important scheduling details like category, duration, priority, due time, and completion status, and it supports actions such as editing the task, marking it complete, and checking whether it belongs in today's schedule.
+- The `Scheduler` class is responsible for organizing tasks into a daily plan. It uses owner constraints and task information to sort tasks by priority, filter tasks that fit within the available time, and generate an explanation for the final plan.
 
 ```mermaid
 classDiagram
@@ -45,9 +42,11 @@ classDiagram
     }
 
     class Scheduler {
+        +owner: Owner
         +tasks: list
         +time_limit: int
         +rules: list
+        +load_tasks_from_owner()
         +sort_by_priority()
         +filter_by_time()
         +generate_schedule()
@@ -65,8 +64,8 @@ classDiagram
 
 **b. Design changes**
 
-- Did your design change during implementation?
-- If yes, describe at least one change and why you made it.
+- Yes. After reviewing the class skeleton, I updated the `Scheduler` design so it can hold a reference to an `Owner` and load tasks from that owner's pets.
+- I made this change because the earlier version treated tasks as a separate input list, which could duplicate data already stored inside each `Pet`. Linking the scheduler more directly to the owner-pet-task relationship makes the design cleaner and should make the scheduling logic easier to manage later.
 
 ---
 
